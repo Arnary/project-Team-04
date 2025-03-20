@@ -9,6 +9,7 @@ import { Op } from "sequelize";
 import fs from "node:fs/promises";
 import cloudinary from "../helpers/cloudinary.js";
 import HttpError from "../helpers/HttpError.js";
+import { recipeSchema } from "../schemas/recipeSchemas.js";
 
 
 export const getPopular = async (req, res) => {
@@ -25,6 +26,7 @@ export const getPopular = async (req, res) => {
 export const addRecipe = async (req, res) => {
     try {
         const { id: userId } = req.user;
+
         const recipeData = { ...req.body };
 
         if (typeof recipeData.ingredients === 'string') {
@@ -35,8 +37,9 @@ export const addRecipe = async (req, res) => {
             }
         }
 
-        if (!Array.isArray(recipeData.ingredients)) {
-            throw HttpError(400, "Ingredients must be an array");
+        const { error } = recipeSchema.validate(recipeData);
+        if (error) {
+            throw HttpError(400, error.message);
         }
 
         if (req.file) {
@@ -45,32 +48,14 @@ export const addRecipe = async (req, res) => {
                 use_filename: true,
             });
             recipeData.thumb = url;
+
             await fs.unlink(req.file.path);
         } else if (!recipeData.thumb) {
             throw HttpError(400, "Recipe thumbnail is required");
         }
 
         const newRecipe = await createRecipe(recipeData, userId);
-
-        const response = {
-            id: newRecipe.id,
-            title: newRecipe.title,
-            description: newRecipe.description,
-            instructions: newRecipe.instructions,
-            time: newRecipe.time,
-            categoryId: newRecipe.categoryId,
-            areaId: newRecipe.areaId,
-            thumb: newRecipe.thumb,
-            ingredients: newRecipe.ingredients.map(ingredient => ({
-                id: ingredient.id,
-                name: ingredient.name,
-                desc: ingredient.desc,
-                img: ingredient.img,
-                measure: ingredient.recipe_ingredient.measure
-            }))
-        };
-
-        res.status(201).json(response);
+        res.status(201).json(newRecipe);
     } catch (error) {
         if (req.file) {
             try {

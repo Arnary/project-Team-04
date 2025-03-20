@@ -1,5 +1,12 @@
 import express from "express";
-import { getPopular, addRecipe, removeRecipe, searchRecipes } from "../controllers/recipesController.js";
+import { 
+    getRecipeById, 
+    getMyRecipes, 
+    getPopular, 
+    addRecipe, 
+    removeRecipe, 
+    searchRecipes 
+} from "../controllers/recipesController.js";
 import authenticate from "../middlewares/authenticate.js";
 import validateBody from "../helpers/validateBody.js";
 import { recipeSchema } from "../schemas/recipeSchemas.js";
@@ -10,6 +17,7 @@ const recipesRouter = express.Router();
 
 recipesRouter.get("/popular", ctrlWrapper(getPopular));
 recipesRouter.get("/", ctrlWrapper(searchRecipes));
+recipesRouter.get("/my", authenticate, ctrlWrapper(getMyRecipes));
 recipesRouter.post(
     "/",
     authenticate,
@@ -18,5 +26,6 @@ recipesRouter.post(
     ctrlWrapper(addRecipe)
 );
 recipesRouter.delete("/:id", authenticate, ctrlWrapper(removeRecipe));
+recipesRouter.get("/:id", ctrlWrapper(getRecipeById));
 
 export default recipesRouter;
