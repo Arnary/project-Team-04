@@ -44,7 +44,7 @@ export const createRecipe = async (recipeData, userId) => {
         include: [
             {
                 model: Ingredients,
-                through: {attributes: ["measure"]},
+                through: {attributes: ["measure"]}
             }
         ]
     });
