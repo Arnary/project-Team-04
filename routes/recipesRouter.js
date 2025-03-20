@@ -4,12 +4,19 @@ import authenticate from "../middlewares/authenticate.js";
 import validateBody from "../helpers/validateBody.js";
 import { recipeSchema } from "../schemas/recipeSchemas.js";
 import ctrlWrapper from "../helpers/ctrlWrapper.js";
+import uploadThumb from "../middlewares/uploadThumb.js";
 
 const recipesRouter = express.Router();
 
 recipesRouter.get("/popular", ctrlWrapper(getPopular));
 recipesRouter.get("/", ctrlWrapper(searchRecipes));
-recipesRouter.post("/", authenticate, validateBody(recipeSchema), ctrlWrapper(addRecipe));
+recipesRouter.post(
+    "/",
+    authenticate,
+    uploadThumb.single("thumb"),
+    validateBody(recipeSchema),
+    ctrlWrapper(addRecipe)
+);
 recipesRouter.delete("/:id", authenticate, ctrlWrapper(removeRecipe));
 
 export default recipesRouter;
