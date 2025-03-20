@@ -9,7 +9,6 @@ import { createRecipe, getPopularRecipes, deleteRecipe } from "../services/recip
 import { Op } from "sequelize";
 import fs from "node:fs/promises";
 import cloudinary from "../helpers/cloudinary.js";
-import HttpError from "../helpers/HttpError.js";
 import { recipeSchema } from "../schemas/recipeSchemas.js";
 
 /**
