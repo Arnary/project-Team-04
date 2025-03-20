@@ -1,16 +1,28 @@
 import Recipes from "../db/models/Recipes.js";
 import RecipesIngredients from "../db/models/RecipesIngredients.js";
 import HttpError from "../helpers/HttpError.js";
+import Ingredients from "../db/models/Ingredients.js";
+import {Op} from "sequelize";
 
 
 export const getPopularRecipes = async (limit = 10) => {
-    const popularRecipes = await Recipes.findAll({
-        order: [["favoriteCount", "DESC"]],
-        limit: parseInt(limit, 10)
+    const hasFavorites = await Recipes.findOne({
+        where: { favoriteCount: { [Op.gt]: 0 } }
     });
 
-    return popularRecipes;
+    if (hasFavorites) {
+        return await Recipes.findAll({
+            order: [["favoriteCount", "DESC"]],
+            limit: parseInt(limit, 10)
+        });
+    } else {
+        return await Recipes.findAll({
+            order: [["id", "ASC"]],
+            limit: 4
+        });
+    }
 };
+
 
 export const createRecipe = async (recipeData, userId) => {
     const newRecipe = await Recipes.create({
@@ -28,7 +40,14 @@ export const createRecipe = async (recipeData, userId) => {
         await RecipesIngredients.bulkCreate(ingredientRelations);
     }
 
-    return newRecipe;
+    return await Recipes.findByPk(newRecipe.id, {
+        include: [
+            {
+                model: Ingredients,
+                through: {attributes: ["measure"]},
+            }
+        ]
+    });
 };
 
 
