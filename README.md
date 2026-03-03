@@ -1,5 +1,5 @@
 # Foodies API
-A RESTful backend API for the Foodies App — a platform for creating, discovering, and managing recipes. Built by Team 04 as a collaborative full-stack project.
+A RESTful backend API for the Foodies App - a website where you can find, save in favorites, create, and share recipes. Built by Team-04 as a collaborative full-stack project.
 
 **Live API:** [project-team-04.onrender.com/api/](https://project-team-04.onrender.com/api/)
 
@@ -71,7 +71,7 @@ The API will be available at `http://localhost:3000/api/`.
 | `POST` | `/logout` | Logout current user | yes |
 | `PATCH` | `/avatars` | Update user avatar | yes |
 
-### Users — `/users`
+### Users - `/users`
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|:---:|
